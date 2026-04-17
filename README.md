@@ -2,7 +2,7 @@
 
 Local-first FastAPI service for detecting and redacting sensitive information in PDF files.
 
-`local-redact-agent` runs a complete PDF redaction flow on your machine: upload a PDF, extract page content, use a local Ollama model to detect confidential values, and return a redacted PDF in the response.
+`local-redact-agent` runs a complete PDF redaction flow on your machine: upload a PDF, extract page content, use a local Ollama model to detect confidential values, and save a redacted PDF locally.
 
 ## Table of Contents
 
@@ -23,8 +23,8 @@ Local-first FastAPI service for detecting and redacting sensitive information in
 - Local-first processing with no required external cloud API.
 - In-memory PDF processing (uploaded files are not persisted by this service).
 - AI-assisted confidential data extraction using local Ollama models.
-- Automatic redaction of matched values in the original PDF.
-- JSON response includes findings and base64-encoded redacted PDF output.
+- Automatic redaction of matched values in the original PDF using randomized replacement text.
+- Redacted PDFs are automatically saved to a local output directory.
 
 ## How It Works
 
@@ -32,11 +32,11 @@ Local-first FastAPI service for detecting and redacting sensitive information in
 2. Service validates file type, filename, and size.
 3. PDF pages are converted to markdown/text.
 4. Page content is sent to Ollama for confidential-data extraction.
-5. Detected values are located and redacted in the source PDF.
+5. Detected values are located and replaced with randomized surrogate text in the source PDF.
 6. API returns:
    - Original metadata and page data
    - Structured confidential findings
-   - `redacted_pdf_base64` and `redacted_filename`
+   - `redacted_filename` and `redacted_file_path`
 
 ## Requirements
 
@@ -77,6 +77,7 @@ Environment variables (all optional):
 - `OLLAMA_BASE_URL` (default: `http://127.0.0.1:11434`)
 - `OLLAMA_MODEL` (default: `gemma4`)
 - `OLLAMA_TIMEOUT_SECONDS` (default: `120`)
+- `REDACTED_OUTPUT_DIR` (default: `redacted_output`)
 
 Service constants:
 
@@ -145,20 +146,8 @@ Response shape:
     }
   ],
   "redacted_filename": "redacted_example.pdf",
-  "redacted_pdf_base64": "<base64-pdf-bytes>"
+  "redacted_file_path": "/absolute/path/to/redacted_output/redacted_example.pdf"
 }
-```
-
-Save the redacted PDF locally:
-
-```python
-import base64
-from pathlib import Path
-
-payload = response.json()
-Path(payload["redacted_filename"]).write_bytes(
-    base64.b64decode(payload["redacted_pdf_base64"])
-)
 ```
 
 ## Project Structure
