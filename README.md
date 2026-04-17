@@ -10,11 +10,13 @@ Local-first FastAPI service for detecting and redacting sensitive information in
 - [How It Works](#how-it-works)
 - [Requirements](#requirements)
 - [Quickstart](#quickstart)
+- [Install as a Package](#install-as-a-package)
 - [Configuration](#configuration)
 - [API Reference](#api-reference)
-- [Usage Example](#usage-example)
+- [Usage Examples](#usage-examples)
 - [Project Structure](#project-structure)
 - [Development](#development)
+- [Release Checklist](#release-checklist)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -62,13 +64,33 @@ ollama serve
 3. Start the API:
 
 ```bash
-uv run uvicorn app.main:app --reload
+uv run local-redact-agent --reload
 ```
 
 4. Open API docs:
 
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - ReDoc: `http://127.0.0.1:8000/redoc`
+
+## Install as a Package
+
+Install from local source:
+
+```bash
+pip install .
+```
+
+Install editable for development:
+
+```bash
+pip install -e ".[dev]"
+```
+
+Run API after install:
+
+```bash
+local-redact-agent --host 127.0.0.1 --port 8000
+```
 
 ## Configuration
 
@@ -109,7 +131,9 @@ Behavior:
 - Returns `502` if confidential extraction fails.
 - Returns `500` if PDF redaction fails.
 
-## Usage Example
+## Usage Examples
+
+### API request
 
 Request:
 
@@ -150,6 +174,20 @@ Response shape:
 }
 ```
 
+### Python library import
+
+```python
+from pathlib import Path
+
+from local_redact_agent import redact_pdf_document_sync
+
+pdf_bytes = Path("example.pdf").read_bytes()
+result = redact_pdf_document_sync(file_bytes=pdf_bytes, filename="example.pdf")
+
+Path("redacted_example.pdf").write_bytes(result["redacted_pdf_bytes"])
+print(result["confidential_findings"])
+```
+
 ## Project Structure
 
 ```text
@@ -158,6 +196,7 @@ app/
     routes/
   core/
   services/
+local_redact_agent/
 tests/
 ```
 
@@ -169,10 +208,34 @@ Run tests:
 uv run pytest
 ```
 
+## Release Checklist
+
+1. Bump version in `pyproject.toml`.
+2. Ensure tests pass locally:
+
+```bash
+uv run pytest
+```
+
+3. Build and validate distributions:
+
+```bash
+python -m pip install --upgrade build twine
+python -m build
+python -m twine check dist/*
+```
+
+4. Create and publish a GitHub release.
+5. Confirm the GitHub Actions workflow `.github/workflows/publish.yml` succeeds.
+
+Notes:
+- Configure [PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/) for this repository before first release.
+- Replace placeholder URLs in `pyproject.toml` under `[project.urls]`.
+
 ## Contributing
 
 Contributions are welcome. Please open an issue to discuss substantial changes before submitting a pull request.
 
 ## License
 
-No license file is currently included in this repository.
+This project is licensed under the MIT License. See `LICENSE`.

@@ -4,6 +4,21 @@ version = "0.1.0"
 description = "FastAPI service to upload and process PDF files locally."
 readme = "README.md"
 requires-python = ">=3.13"
+license = "MIT"
+authors = [
+  { name = "Arunav Buragohain" },
+]
+keywords = ["fastapi", "pdf", "redaction", "privacy", "ollama"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Framework :: FastAPI",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Text Processing :: General",
+]
 dependencies = [
   "fastapi>=0.116.0",
   "httpx>=0.28.0",
@@ -14,10 +29,29 @@ dependencies = [
   "uvicorn[standard]>=0.35.0",
 ]
 
+[project.urls]
+Documentation = "https://github.com/your-org/local-redact-agent#readme"
+Issues = "https://github.com/your-org/local-redact-agent/issues"
+
+[project.scripts]
+local-redact-agent = "local_redact_agent.cli:main"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.4.0",
+]
+
 [dependency-groups]
 dev = [
   "pytest>=8.4.0",
 ]
+
+[build-system]
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*", "local_redact_agent*"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
