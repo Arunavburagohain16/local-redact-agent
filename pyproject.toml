@@ -3,7 +3,7 @@ name = "local-redact-agent"
 version = "0.1.0"
 description = "FastAPI service to upload and process PDF files locally."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 license = "MIT"
 authors = [
   { name = "Arunav Buragohain" },
@@ -15,6 +15,7 @@ classifiers = [
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Libraries",
   "Topic :: Text Processing :: General",

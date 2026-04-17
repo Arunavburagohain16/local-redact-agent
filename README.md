@@ -42,7 +42,7 @@ Local-first FastAPI service for detecting and redacting sensitive information in
 
 ## Requirements
 
-- Python `3.13`
+- Python `3.12+`
 - [uv](https://docs.astral.sh/uv/)
 - [Ollama](https://ollama.com/) running locally
 
