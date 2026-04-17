@@ -1,5 +1,5 @@
 [project]
-name = "local-redact-agent"
+name = "redactora"
 version = "0.1.0"
 description = "FastAPI service to upload and process PDF files locally."
 readme = "README.md"
@@ -31,11 +31,11 @@ dependencies = [
 ]
 
 [project.urls]
-Documentation = "https://github.com/your-org/local-redact-agent#readme"
-Issues = "https://github.com/your-org/local-redact-agent/issues"
+Documentation = "https://github.com/your-org/redactora#readme"
+Issues = "https://github.com/your-org/redactora/issues"
 
 [project.scripts]
-local-redact-agent = "local_redact_agent.cli:main"
+redactora = "local_redact_agent.cli:main"
 
 [project.optional-dependencies]
 dev = [

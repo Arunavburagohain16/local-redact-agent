@@ -1,11 +1,14 @@
-# local-redact-agent
+# Redactora
+
+![Redactora logo](assets/redactora-logo.png)
 
 Local-first FastAPI service for detecting and redacting sensitive information in PDF files.
 
-`local-redact-agent` runs a complete PDF redaction flow on your machine: upload a PDF, extract page content, use a local Ollama model to detect confidential values, and save a redacted PDF locally.
+`Redactora` runs a complete PDF redaction flow on your machine: upload a PDF, extract page content, use a local Ollama model to detect confidential values, and save a redacted PDF locally.
 
 ## Table of Contents
 
+- [About Redactora](#about-redactora)
 - [Features](#features)
 - [How It Works](#how-it-works)
 - [Requirements](#requirements)
@@ -19,6 +22,10 @@ Local-first FastAPI service for detecting and redacting sensitive information in
 - [Release Checklist](#release-checklist)
 - [Contributing](#contributing)
 - [License](#license)
+
+## About Redactora
+
+Redactora is a local document-redaction agent built for privacy-first workflows. It helps teams detect sensitive content in PDFs and apply automated redactions without sending documents to external cloud services, while keeping results available through a simple API and Python-friendly integration.
 
 ## Features
 
@@ -64,7 +71,7 @@ ollama serve
 3. Start the API:
 
 ```bash
-uv run local-redact-agent --reload
+uv run redactora --reload
 ```
 
 4. Open API docs:
@@ -89,7 +96,7 @@ pip install -e ".[dev]"
 Run API after install:
 
 ```bash
-local-redact-agent --host 127.0.0.1 --port 8000
+redactora --host 127.0.0.1 --port 8000
 ```
 
 ## Configuration
