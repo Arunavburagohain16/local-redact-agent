@@ -3,7 +3,7 @@ from io import BytesIO
 import fitz
 from pypdf import PdfReader, PdfWriter
 
-from app.services.pdf_redactor import _randomize_text, redact_pdf_by_findings
+from app.services.pdf_redactor import _pick_replacement_text, redact_pdf_by_findings
 
 
 def create_pdf_bytes() -> bytes:
@@ -111,13 +111,37 @@ def test_redact_pdf_inserts_visible_replacement_text() -> None:
     assert "person@example.com" not in page_text.lower()
 
 
-def test_randomize_text_preserves_shape() -> None:
-    source = "AAFCG9846E person@example.com"
+def test_redact_pdf_preserves_original_font_size_when_possible() -> None:
+    file_bytes = create_sensitive_only_pdf_bytes()
+    findings = [{"page_number": 0, "findings": [{"value": "person@example.com"}]}]
 
-    randomized = _randomize_text(source)
+    redacted = redact_pdf_by_findings(file_bytes, findings)
 
-    assert len(randomized) == len(source)
-    assert randomized != source
-    assert randomized[5:9].isdigit()
-    assert randomized[10] == " "
-    assert randomized[-4] == "."
+    document = fitz.open(stream=BytesIO(redacted), filetype="pdf")
+    text_dict = document[0].get_text("dict")
+    document.close()
+
+    span_sizes: list[float] = []
+    for block in text_dict.get("blocks", []):
+        for line in block.get("lines", []):
+            for span in line.get("spans", []):
+                size = span.get("size")
+                if isinstance(size, (int, float)):
+                    span_sizes.append(float(size))
+
+    assert span_sizes
+    assert max(span_sizes) >= 11.0
+
+
+def test_pick_replacement_text_uses_type_specific_placeholders() -> None:
+    email_replacement = _pick_replacement_text("email", "person@example.com")
+    phone_replacement = _pick_replacement_text("phone", "9876543210")
+    id_replacement = _pick_replacement_text("id_number", "D413152DN2503838")
+    fallback_replacement = _pick_replacement_text("unknown_type", "something")
+    second_email_replacement = _pick_replacement_text("email", "person@example.com")
+
+    assert email_replacement == "dummy.user@example.test"
+    assert second_email_replacement == email_replacement
+    assert phone_replacement == "9000000000"
+    assert id_replacement == "DUMMY-ID-0001"
+    assert fallback_replacement == "Dummy confidential value"
