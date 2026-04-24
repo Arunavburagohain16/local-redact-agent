@@ -17,6 +17,7 @@ Local-first FastAPI service for detecting and redacting sensitive information in
 - [Configuration](#configuration)
 - [API Reference](#api-reference)
 - [Usage Examples](#usage-examples)
+- [Architecture](#architecture)
 - [Project Structure](#project-structure)
 - [Development](#development)
 - [Release Checklist](#release-checklist)
@@ -195,6 +196,23 @@ Path("redacted_example.pdf").write_bytes(result["redacted_pdf_bytes"])
 print(result["confidential_findings"])
 ```
 
+## Architecture
+
+See [docs/architecture.md](docs/architecture.md) for the full component and request-flow diagrams (Mermaid, renders on GitHub).
+
+At a glance:
+
+```mermaid
+flowchart LR
+    Client["HTTP / Python client"] --> API["FastAPI<br/>POST /upload-pdf"]
+    API --> Proc["pdf_processor<br/>(Marker)"]
+    API --> Extract["confidential_extractor"]
+    API --> Redact["pdf_redactor<br/>(PyMuPDF)"]
+    Extract -- "/api/generate" --> Ollama[("Ollama (local)")]
+    Redact --> FS[("redacted_output/")]
+    API --> Client
+```
+
 ## Project Structure
 
 ```text
@@ -204,6 +222,7 @@ app/
   core/
   services/
 local_redact_agent/
+docs/
 tests/
 ```
 
